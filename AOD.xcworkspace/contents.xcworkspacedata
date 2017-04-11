@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:TPAOD">
+   </FileRef>
+   <FileRef
+      location = "group:benchmarks">
+   </FileRef>
+   <FileRef
+      location = "group:rapport-modele.tex">
+   </FileRef>
+   <FileRef
+      location = "group:rapport-modele.pdf">
+   </FileRef>
+   <FileRef
+      location = "group:tp-abr-optimal-enonce.pdf">
+   </FileRef>
+</Workspace>
