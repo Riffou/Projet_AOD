@@ -16,7 +16,7 @@
 #include <string.h>
 
 
-float cout_min(int i, int j, int n, float c[n][n], int racines[n][n]) {
+float cout_min(int i, int j, long n, float c[10000][10000], int racines[10000][10000]) {
   // On cherche la valeur de k qui minimise : c(i, k-1) + c(k+1, j) avec i <= k <= j
   float sumTemp;
   float minTemp = 1000.0;
@@ -40,7 +40,7 @@ float cout_min(int i, int j, int n, float c[n][n], int racines[n][n]) {
   return minTemp;
 }
 
-void construit_arbre(int i, int j, int n, int racines[n][n], int abr[n][2]) {
+void construit_arbre(int i, int j, long n, int racines[10000][10000], int abr[10000][2]) {
 
   // on crée le noeud associé à l'arbre (i, j), e0, .., en 
   // On regarde si il a fils gauche : if ()
@@ -79,7 +79,6 @@ void construit_arbre(int i, int j, int n, int racines[n][n], int abr[n][2]) {
 int main (int argc, char *argv[]) {
   long n = 0 ; // Number of elements in the dictionary
   FILE *freqFile = NULL ; // File that contains n positive integers defining the relative frequence of dictinary elements 
-
 
   if(argc != 3){
     fprintf(stderr, "!!!!! Usage: ./compileBST n  originalFile !!!!!\n");
@@ -132,16 +131,18 @@ int main (int argc, char *argv[]) {
     if  (codeRetour != EXIT_SUCCESS) return codeRetour ;
   }
 
+
   freqFile = fopen(argv[2] , "r" );
   if (freqFile==NULL) {fprintf (stderr, "!!!!! Error opening originalFile !!!!!\n"); exit(EXIT_FAILURE);}
     
+
   float access[n];
   float proba[n];
   // avec proba_sum[k] = somme pour i = 0 à k de proba[i]
   float proba_sum[n];
-  float c[n][n];
-  int racines[n][n];
-  int abr[n][2];
+  static float c[10000][10000];
+  static int racines[10000][10000];
+  static int abr[10000][2];
   int i=0;
   int j=0;
   float occurences_sum = 0;
@@ -164,7 +165,7 @@ int main (int argc, char *argv[]) {
     
     // calcul des sommes des probabilités
     proba_sum[0] = proba[0];
-    printf("proba_sum[0] : %f\n", proba_sum[0]);
+   // printf("proba_sum[0] : %f\n", proba_sum[0]);
     for (i = 1; i < n; i++) {
       proba_sum[i] = proba_sum[i-1] + proba[i];
      // printf("proba_sum[%d] : %f\n", i, proba_sum[i]);
