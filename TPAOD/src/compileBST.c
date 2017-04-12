@@ -16,7 +16,29 @@
 #include <string.h>
 
 
-
+float cout_min(int i, int j, int n, float c[n][n], int racines[n][n]) {
+  // On cherche la valeur de k qui minimise : c(i, k-1) + c(k+1, j) avec i <= k <= j
+  float sumTemp;
+  float minTemp = 1000.0;
+  int l;
+  for (l = i; l <= j; l++) {
+    sumTemp = 0.0;
+    if ((l-1) >= i) {
+      //printf("SumTemp %d %d : %f\n", i, l-1, c[i][l-1]);
+      sumTemp = c[i][l-1];  
+    }
+    if ((l+1) <= j) {
+     // printf("SumTemp %d %d : %f\n", l+1, j, c[l+1][j]);
+     // printf("SumTemp %f\n", c[1][1]);
+      sumTemp += c[l+1][j];
+    }
+    if (sumTemp < minTemp) {
+      minTemp = sumTemp;
+      racines[i][j] = l;
+    }
+  }
+  return minTemp;
+}
 /**
  * Main function
  * \brief Main function
@@ -28,7 +50,8 @@
 int main (int argc, char *argv[]) {
   long n = 0 ; // Number of elements in the dictionary
   FILE *freqFile = NULL ; // File that contains n positive integers defining the relative frequence of dictinary elements 
-  
+
+
   if(argc != 3){
     fprintf(stderr, "!!!!! Usage: ./compileBST n  originalFile !!!!!\n");
       exit(EXIT_FAILURE); /* indicate failure.*/
@@ -38,7 +61,8 @@ int main (int argc, char *argv[]) {
     int codeRetour = EXIT_SUCCESS;
     char *posError;
     long resuLong;
-    n = atol(argv[1] ) ;
+    n = atol(argv[1]);
+  
    
     assert(argc >= 2);
     // Conversion of argv[1] en long
@@ -82,9 +106,62 @@ int main (int argc, char *argv[]) {
   freqFile = fopen(argv[2] , "r" );
   if (freqFile==NULL) {fprintf (stderr, "!!!!! Error opening originalFile !!!!!\n"); exit(EXIT_FAILURE);}
     
-  // TO BE COMPLETED 
+  float access[n];
+  float proba[n];
+  // avec proba_sum[k] = somme pour i = 0 à k de proba[i]
+  float proba_sum[n];
+  float c[n][n];
+  int racines[n][n];
+  int i=0;
+  int j=0;
+  float occurences_sum = 0;
+   // On lit les occurences dans le fichier freqFile et on les stocke dans le tableau access
+    fscanf(freqFile, "%d", &j);
+    while(!feof(freqFile)) {
+        access[i]=j;
+        printf("Acces[%d] : %f\n\n", i, access[i]);
+        occurences_sum += access[i];
+        fscanf(freqFile, "%d", &j);
+        i++;
+    }
+    // calcul des probabilités pour chaque élément de access
+    for(i = 0; i < n; i++) {
+      proba[i] = access[i]/occurences_sum;
+      c[i][i] = proba[i];
+      printf("Proba[%d] : %f\n", i, proba[i]);
+      printf("c[%d][%d] : %f\n\n", i, i , c[i][i]);
+    }
+    
+    // calcul des sommes des probabilités
+    proba_sum[0] = proba[0];
+    printf("proba_sum[0] : %f\n", proba_sum[0]);
+    for (i = 1; i < n; i++) {
+      proba_sum[i] = proba_sum[i-1] + proba[i];
+      printf("proba_sum[%d] : %f\n", i, proba_sum[i]);
+    }
+    
+    // calcul des coûts c(i,j) avec 0 <= i <= j <= n, c(i, j) contient les éléments du dictionnaire suivants : e(i), ..., e(j)
+
+    // étape 1 : calcul des coûts c(i, i) : déjà fait dans le calcul des probabilités car c[i][i] = p[i]
+    // étape 2 : calcul des coûts et des racines dans un ordre bien précis : 
+    for (j = 1; j < n; j++) {
+      for (i = j-1; i >= 0; i--) {
+        if (i > 0) {
+          c[i][j] = (proba_sum[j] - proba_sum[i-1]) + cout_min(i, j, n, c, racines);
+        }
+        else {
+          c[i][j] = proba_sum[j] + cout_min(i, j, n, c, racines);
+        }
+        printf("c[%d][%d] = %f\n\n", i, j, c[i][j]);
+        printf("racines : racines[%d][%d] = %d\n\n", i, j, racines[i][j]);
+      }
+    }
+/*
+*/
   fclose(freqFile);
 
 
   return 0;
 }
+
+
