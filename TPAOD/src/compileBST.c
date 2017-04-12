@@ -192,7 +192,7 @@ int main (int argc, char *argv[]) {
     }
 /*
 */
-    printf("\n\n-- ABR --\n\n");
+  //  printf("\n\n-- ABR --\n\n");
 
     // Calcul de l'ABR optimal en fonction du tableau de racines    
     construit_arbre(0, n-1, n, racines, abr);
