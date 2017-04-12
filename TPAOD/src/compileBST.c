@@ -39,6 +39,35 @@ float cout_min(int i, int j, int n, float c[n][n], int racines[n][n]) {
   }
   return minTemp;
 }
+
+void construit_arbre(int i, int j, int n, int racines[n][n], int abr[n][2]) {
+
+  // on crée le noeud associé à l'arbre (i, j), e0, .., en 
+  // On regarde si il a fils gauche : if ()
+
+  // on vérifie que l'arbre a un fils gauche
+
+ // printf("\nconstruit_arbre %d %d %d", i, j, racines[i][j]);
+  if (i < racines[i][j]) {
+    //printf("1");
+    abr[racines[i][j]][0] = racines[i][racines[i][j] - 1];
+   // printf("2");
+    construit_arbre(i, racines[i][j] - 1, n, racines, abr);
+    //printf("3");
+  }
+  // pas de fils gauche
+  else {
+    abr[racines[i][j]][0] = -1;
+  }
+  if (racines[i][j] < j) {
+    abr[racines[i][j]][1] = racines[racines[i][j] + 1][j];
+    construit_arbre(racines[i][j] + 1, j, n, racines, abr); 
+  }
+  // pas de fils droit
+  else {
+    abr[racines[i][j]][1] = -1;
+  }
+}
 /**
  * Main function
  * \brief Main function
@@ -112,6 +141,7 @@ int main (int argc, char *argv[]) {
   float proba_sum[n];
   float c[n][n];
   int racines[n][n];
+  int abr[n][2];
   int i=0;
   int j=0;
   float occurences_sum = 0;
@@ -119,7 +149,7 @@ int main (int argc, char *argv[]) {
     fscanf(freqFile, "%d", &j);
     while(!feof(freqFile)) {
         access[i]=j;
-        printf("Acces[%d] : %f\n\n", i, access[i]);
+     //   printf("Acces[%d] : %f\n\n", i, access[i]);
         occurences_sum += access[i];
         fscanf(freqFile, "%d", &j);
         i++;
@@ -128,8 +158,8 @@ int main (int argc, char *argv[]) {
     for(i = 0; i < n; i++) {
       proba[i] = access[i]/occurences_sum;
       c[i][i] = proba[i];
-      printf("Proba[%d] : %f\n", i, proba[i]);
-      printf("c[%d][%d] : %f\n\n", i, i , c[i][i]);
+     // printf("Proba[%d] : %f\n", i, proba[i]);
+     // printf("c[%d][%d] : %f\n\n", i, i , c[i][i]);
     }
     
     // calcul des sommes des probabilités
@@ -137,7 +167,7 @@ int main (int argc, char *argv[]) {
     printf("proba_sum[0] : %f\n", proba_sum[0]);
     for (i = 1; i < n; i++) {
       proba_sum[i] = proba_sum[i-1] + proba[i];
-      printf("proba_sum[%d] : %f\n", i, proba_sum[i]);
+     // printf("proba_sum[%d] : %f\n", i, proba_sum[i]);
     }
     
     // calcul des coûts c(i,j) avec 0 <= i <= j <= n, c(i, j) contient les éléments du dictionnaire suivants : e(i), ..., e(j)
@@ -152,12 +182,27 @@ int main (int argc, char *argv[]) {
         else {
           c[i][j] = proba_sum[j] + cout_min(i, j, n, c, racines);
         }
-        printf("c[%d][%d] = %f\n\n", i, j, c[i][j]);
-        printf("racines : racines[%d][%d] = %d\n\n", i, j, racines[i][j]);
+       // printf("c[%d][%d] = %f\n\n", i, j, c[i][j]);
+       // printf("racines : racines[%d][%d] = %d\n\n", i, j, racines[i][j]);
       }
+    }
+    // calcul des racines qui ne sont pas calculées précédemment
+    for (i = 0; i < n; i++) {
+      racines[i][i] = i;
     }
 /*
 */
+    printf("\n\n-- ABR --\n\n");
+
+    // Calcul de l'ABR optimal en fonction du tableau de racines    
+    construit_arbre(0, n-1, n, racines, abr);
+    printf("static int BSTroot = %d;\n", racines[0][n-1]);
+    printf("static int BSTtree[%ld][2] = {\n", n);
+    for (i = 0; i < n-1; i++) {
+      printf("{%d, %d},\n", abr[i][0], abr[i][1]);
+    }
+    printf("{%d, %d};\n", abr[n-1][0], abr[n-1][1]);
+
   fclose(freqFile);
 
 
