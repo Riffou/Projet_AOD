@@ -1,5 +1,5 @@
 /*! \file compileBST.c
- *  \brief	   This implements the applyPatch program.
+ *  \brief     This implements the applyPatch program.
  *  \author    Lucie Pansart
  *  \author    Jean-Louis Roch
  *  \version   1.0
@@ -16,7 +16,7 @@
 #include <string.h>
 
 
-float cout_min(int i, int j, long n, float c[10000][10000], int racines[10000][10000]) {
+float cout_min(int i, int j, long n, float **c, int **racines) {
   // On cherche la valeur de k qui minimise : c(i, k-1) + c(k+1, j) avec i <= k <= j
   float sumTemp;
   float minTemp = 1000.0;
@@ -40,7 +40,7 @@ float cout_min(int i, int j, long n, float c[10000][10000], int racines[10000][1
   return minTemp;
 }
 
-void construit_arbre(int i, int j, long n, int racines[10000][10000], int abr[10000][2]) {
+void construit_arbre(int i, int j, long n, int **racines, int **abr) {
 
   // on crée le noeud associé à l'arbre (i, j), e0, .., en 
   // On regarde si il a fils gauche : if ()
@@ -136,15 +136,33 @@ int main (int argc, char *argv[]) {
   if (freqFile==NULL) {fprintf (stderr, "!!!!! Error opening originalFile !!!!!\n"); exit(EXIT_FAILURE);}
     
 
-  float access[n];
-  float proba[n];
+  float *access = calloc(n, sizeof(float));
+  float *proba  = calloc(n, sizeof(float));
   // avec proba_sum[k] = somme pour i = 0 à k de proba[i]
-  float proba_sum[n];
-  static float c[10000][10000];
-  static int racines[10000][10000];
-  static int abr[10000][2];
+  float *proba_sum = calloc(n, sizeof(float));
+
   int i=0;
+
+  float **c;
+  c = malloc(n * sizeof(float*));
+  for (i = 0; i < n; i++) {
+    c[i] = (float*)calloc(n, sizeof(float));
+  }
+  
+  int **racines;
+  racines = malloc(n * sizeof(int*));
+  for (i = 0; i < n; i++) {
+    racines[i] = (int*)calloc(n, sizeof(int));
+  }
+
+  int **abr;
+  abr = malloc(n * sizeof(int*));
+  for (i = 0; i < n; i++) {
+    abr[i] = (int*)calloc(2, sizeof(int));
+  }
+
   int j=0;
+  i = 0;
   float occurences_sum = 0;
    // On lit les occurences dans le fichier freqFile et on les stocke dans le tableau access
     fscanf(freqFile, "%d", &j);
@@ -209,5 +227,3 @@ int main (int argc, char *argv[]) {
 
   return 0;
 }
-
-
