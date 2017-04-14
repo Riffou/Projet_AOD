@@ -14,6 +14,7 @@
 #include <errno.h>
 #include <assert.h>
 #include <string.h>
+#include <time.h>
 
 
 float cout_min(int i, int j, long n, float **c, int **racines) {
@@ -77,6 +78,7 @@ void construit_arbre(int i, int j, long n, int **racines, int **abr) {
  * \returns { 0 if succeeds and prints C code implementing an optimal ABR on stdout; exit code otherwise}
  */
 int main (int argc, char *argv[]) {
+  clock_t start = clock();
   long n = 0 ; // Number of elements in the dictionary
   FILE *freqFile = NULL ; // File that contains n positive integers defining the relative frequence of dictinary elements 
 
@@ -223,7 +225,9 @@ int main (int argc, char *argv[]) {
     printf("{%d, %d};\n", abr[n-1][0], abr[n-1][1]);
 
   fclose(freqFile);
-
+  clock_t end = clock();
+  double seconds = (double) (end - start) / CLOCKS_PER_SEC;
+  printf("%.15f",seconds);
 
   return 0;
 }
